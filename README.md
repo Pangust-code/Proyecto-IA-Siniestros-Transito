@@ -66,6 +66,8 @@ Una plataforma adaptativa que:
 ## 📁 Estructura del Proyecto & Flujo de Trabajo
 
 El sistema está dividido en tres fases secuenciales implementadas en Jupyter Notebooks, complementadas con scripts de producción:
+
+```text
 Proyecto-Siniestros-Transito/
 ├── Fase_1_Riesgo_Ubicacion_Accidentes_Cuenca.ipynb   # Limpieza, ingeniería de variables y exportación
 ├── Fase_2_Entrenamiento_Riesgo_Ubicacion_Cuenca.ipynb # Entrenamiento de la Red Neuronal y métricas
@@ -75,7 +77,7 @@ Proyecto-Siniestros-Transito/
 ├── accidentes_limpios_powerbi.csv                    # Registros individuales limpios para mapas
 ├── modelo_riesgo_ubicacion_cuenca.keras              # Red neuronal entrenada
 └── datos_fase1_riesgo_ubicacion.pkl                  # Pipeline de preprocesamiento guardado
-
+```
 ---
 
 ## 🛠️ Tecnologías Utilizadas
