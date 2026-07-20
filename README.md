@@ -120,3 +120,11 @@ Proyecto-Siniestros-Transito/
 2. Instala las dependencias necesarias:
    ```bash
    pip install -r requirements.txt
+
+---
+
+## 📌 Repositorios del Backend y Frontend de nuestro proyecto
+
+- **Frontend**: https://github.com/Pangust-code/ProyectoIA-Siniestros-Transito-Frontend
+
+- **Backend**: https://github.com/Pangust-code/ProyectoIA-Siniestros-Transito-Backend
