@@ -1,30 +1,81 @@
-# 🚦 Sistema de Alerta Temprana de Accidentes de Tránsito en Cuenca
+# Sistema de Alerta Temprana de Accidentes de Tránsito en Cuenca
 
-Este proyecto implementa un modelo de Machine Learning (Red Neuronal Artificial) diseñado para predecir el riesgo de accidentes de tránsito en la ciudad de Cuenca, Ecuador. El sistema se divide en tres fases principales que abarcan desde el procesamiento de datos históricos hasta la generación de predicciones para su visualización en Power BI.
+Proyecto de Machine Learning con una red neuronal artificial para estimar el riesgo relativo de accidentes de tránsito en Cuenca, Ecuador. El sistema se organiza en tres notebooks: preparación de datos, entrenamiento del modelo y generación de predicciones listas para Power BI.
 
-## 🗂️ Fase 1: Preparación y Limpieza de Datos
-En esta etapa se estructura el conocimiento histórico para que la Inteligencia Artificial pueda aprender los patrones de accidentalidad.
+## Resumen
 
-*   **Variables clave:** Se preparó el dataset extrayendo y limpiando características espaciotemporales: Fecha, Hora, Parroquia, Zona (Urbana/Rural) y Feriado.
-*   **Ingeniería de características:** Se aplicaron transformaciones matemáticas cíclicas (seno y coseno) a las horas y días de la semana para que el modelo entienda la continuidad del tiempo.
-*   **Cálculo de Riesgo Relativo:** Se generó un porcentaje de riesgo (0% a 100%) dividiendo los accidentes de cada combinación específica entre el máximo histórico de accidentes observado. 
-*   **Clasificación de Niveles:** Se establecieron umbrales para categorizar el riesgo en Bajo (0-39%), Medio (40-69%) y Alto (70-100%).
-*   **Exportación:** Se dividieron los datos en conjuntos de entrenamiento y prueba (80/20) y se guardó el preprocesador en formato `.pkl`.
+El proyecto toma el historial de accidentes, lo limpia y lo transforma en variables útiles para aprendizaje automático. A partir de esa base, construye un modelo de regresión que devuelve un porcentaje de riesgo entre 0 y 100. Luego, la fase final combina la predicción con datos históricos de contexto para producir salidas útiles en análisis y visualización.
 
-## 🧠 Fase 2: Entrenamiento del Modelo de IA
-Esta fase se centra en la construcción, entrenamiento y evaluación de la Red Neuronal de regresión.
+La idea general es responder esta pregunta: dada una fecha, una hora y una ubicación concreta en Cuenca, ¿qué tan alto es el riesgo histórico relativo de accidentes en ese contexto? El resultado no es una probabilidad absoluta, sino un índice aprendido a partir de los patrones observados en los datos.
 
-*   **Arquitectura:** Se diseñó un modelo Secuencial con capas ocultas Densas (64, 32 y 16 neuronas) usando activación `ReLU` y capas de `Dropout` para evitar el sobreajuste.
-*   **Capa de salida:** Se utilizó una única neurona con activación `sigmoid`, cuyo resultado se escala para obtener el porcentaje final de riesgo.
-*   **Optimización:** El entrenamiento se realizó con el optimizador `Adam`, utilizando `EarlyStopping` (para detener el entrenamiento si no hay mejora) y `ReduceLROnPlateau` (para ajustar la tasa de aprendizaje).
-*   **Evaluación:** El modelo se validó utilizando métricas estadísticas como MAE, MSE, RMSE y R², y se guardó el modelo final en formato `.keras`.
+## Cómo funciona
 
-## 🚀 Fase 3: Predicción y Salida a Producción
-La última fase integra los artefactos creados para interactuar con el usuario y alimentar paneles de inteligencia de negocios.
+### Fase 1: preparación de datos
 
-*   **Ingreso de datos:** El sistema recibe parámetros manuales del usuario (Fecha, Hora, Parroquia, Zona y Feriado) y los transforma automáticamente usando el preprocesador de la Fase 1.
-*   **Predicción y Contexto:** La IA calcula el nivel de riesgo y busca en el historial para adjuntar datos estadísticos de la zona, como: causa probable, siniestro más común, vehículo frecuente y promedios de víctimas.
-*   **Integración con Power BI:** Todos los resultados, incluyendo las coordenadas geográficas (Latitud y Longitud) y la clasificación del mapa, se exportan automáticamente a archivos CSV optimizados (separados por punto y coma y con coma decimal) para su consumo directo en herramientas como Power BI.
+- Limpia y normaliza columnas, texto y coordenadas para evitar duplicados por escritura distinta o valores mal capturados.
+- Convierte la fecha y la hora a formatos numéricos y también crea variables derivadas como mes, día de la semana y rango horario.
+- Aplica transformaciones cíclicas con seno y coseno para que el modelo entienda que las horas y los días no “terminan” de forma brusca.
+- Agrupa los accidentes por combinación de tiempo y ubicación para calcular frecuencia histórica.
+- Genera el porcentaje de riesgo relativo y clasifica cada caso como bajo, medio o alto.
+- Exporta los datos procesados, el preprocesador y archivos auxiliares para las fases siguientes y para Power BI.
 
-link del video:
+En esta fase también se generan tablas útiles para análisis externo, por ejemplo un resumen histórico con métricas como la causa más frecuente, el tipo de siniestro más común, el vehículo más repetido y los promedios de lesionados y fallecidos.
+
+### Fase 2: entrenamiento del modelo
+
+- Carga los datos preparados en la fase anterior y recupera el preprocesador ya ajustado.
+- Entrena una red neuronal con capas densas y `Dropout` para aprender relaciones no lineales entre ubicación, horario y riesgo.
+- Usa `EarlyStopping` y ajuste de tasa de aprendizaje para detener el entrenamiento cuando el modelo deja de mejorar.
+- Convierte la salida a un valor entre 0 y 1 durante el entrenamiento y luego la reescala a porcentaje.
+- Evalúa el modelo con MAE, MSE, RMSE y R² para medir el error y la capacidad explicativa.
+- Guarda el modelo final en formato `.keras`, junto con métricas, historial y resultados de prueba.
+
+Además de la evaluación numérica, esta fase permite comparar visualmente los valores reales frente a los predichos y revisar cómo se comporta la clasificación final en niveles bajo, medio y alto.
+
+### Fase 3: predicción y salida
+
+- Recibe nuevos datos de fecha, hora, parroquia, zona y feriado desde una entrada manual o desde una interfaz.
+- Deriva automáticamente las variables temporales necesarias para el modelo, como el mes, el día de la semana y el rango horario.
+- Aplica el mismo preprocesador usado en el entrenamiento para mantener consistencia entre lo que vio el modelo y lo que predice.
+- Genera una predicción de riesgo y la traduce a nivel bajo, medio o alto.
+- Busca información histórica relacionada para completar la salida con contexto útil, como la causa más frecuente o el vehículo más común.
+- Exporta archivos CSV listos para Power BI, análisis geográfico o consumo en otras aplicaciones.
+
+Esta fase está pensada para ser la puerta de salida del proyecto: combina el modelo, el histórico y los archivos de exportación en un solo flujo para que la predicción se pueda reutilizar en reportes o en una aplicación.
+
+## Estructura del proyecto
+
+- [Fase 1](Fase_1_Riesgo_Ubicacion_Accidentes_Cuenca.ipynb): limpieza, ingeniería de variables y exportación de datos.
+- [Fase 2](Fase_2_Entrenamiento_Riesgo_Ubicacion_Cuenca.ipynb): entrenamiento y evaluación del modelo.
+- [Fase 3](Fase_3_Completa_Riesgo_Accidentes_Cuenca.ipynb): predicción, contexto histórico y exportación final.
+
+## Archivos principales
+
+- `dataset_modelo_riesgo.csv`: base agregada usada para entrenar y analizar el riesgo. Contiene la combinación de variables de tiempo y ubicación con su porcentaje de riesgo relativo.
+- `resumen_historico_powerbi.csv`: tabla con indicadores históricos para reportes. Sirve para enriquecer la visualización con contexto estadístico.
+- `accidentes_limpios_powerbi.csv`: registros limpios para análisis y mapa. Conserva los campos necesarios para explorar la información geográfica.
+- `modelo_riesgo_ubicacion_cuenca.keras`: modelo entrenado y listo para inferencia. Es el archivo que usa la Fase 3 para predecir.
+- `datos_fase1_riesgo_ubicacion.pkl`: preprocesador, variables y particiones de entrenamiento/prueba. Permite reproducir el mismo procesamiento en otras sesiones.
+- `predicciones_riesgo_powerbi.csv`, `mapa_riesgo_powerbi.csv`, `ultima_prediccion_riesgo.csv`: salidas generadas en la Fase 3 para consumo directo en Power BI o para revisar una predicción puntual.
+
+## Requisitos
+
+Instala las dependencias con:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Uso recomendado
+
+1. Ejecuta primero la Fase 1 para generar los datos procesados.
+2. Ejecuta la Fase 2 para entrenar y guardar el modelo.
+3. Ejecuta la Fase 3 para probar predicciones y exportar archivos para Power BI.
+
+## Nota
+
+El resultado del modelo es un índice de riesgo histórico relativo, no una probabilidad absoluta de accidente.
+
+## Video
+
 https://youtu.be/-Bo8oi-aF8o?feature=shared
