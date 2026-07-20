@@ -1,71 +1,120 @@
 # 🚦 Sistema de Alerta Temprana de Accidentes de Tránsito en Cuenca
 
-Proyecto de Machine Learning con una red neuronal artificial para estimar el riesgo relativo de accidentes de tránsito en Cuenca, Ecuador. El sistema se organiza en tres fases metodológicas: preparación de datos, entrenamiento del modelo y generación de predicciones en una aplicación web interactiva[cite: 7].
+Este repositorio contiene la arquitectura y el desarrollo completo de un sistema inteligente de Machine Learning y Deep Learning orientado a la predicción, análisis espacial y gestión temprana de riesgos viales en Cuenca, Ecuador. 
 
-## Resumen
-
-El proyecto toma el historial de accidentes, lo limpia y lo transforma en variables útiles para el aprendizaje automático[cite: 7]. A partir de esa base, construye un modelo de regresión que devuelve un porcentaje de riesgo entre 0 y 100[cite: 7]. Luego, la fase final combina la predicción con datos históricos de contexto para producir una visualización dinámica en una página web.
-
-La idea general es responder esta pregunta: dada una fecha, una hora y una ubicación concreta en Cuenca, ¿qué tan alto es el riesgo histórico relativo de accidentes en ese contexto?[cite: 7]. El resultado no es una probabilidad absoluta, sino un índice aprendido a partir de los patrones observados en los datos[cite: 7].
+> **Propósito del Proyecto:** Desarrollar una solución basada en Redes Neuronales Artificiales para estimar el riesgo histórico relativo de siniestros de tránsito, integrando un backend robusto en Python, una interfaz web interactiva y análisis geoespacial.
 
 ---
 
-## 🌐 ¿Cómo funciona la Página Web? (Arquitectura del Sistema)
+## 👨‍💻 Contexto Académico / Profesional
 
-Nuestra plataforma web está diseñada para ser rápida, predictiva y tolerante a fallos, dividida en dos partes principales:
+**Proyecto de Inteligencia Artificial y Aprendizaje Automático**
+- **Institución:** Universidad Politécnica Salesiana
+- **Equipo de Desarrollo:** Diana Avila, Sebastian Cabrera, Valeria Mantilla, Daniel Guanga
 
-1. **Frontend (Interfaz de Usuario en React):** 
-   - El usuario selecciona únicamente la fecha, la hora, la parroquia y si es feriado.
-   - La interfaz muestra de forma dinámica un **Dashboard Analítico** con el Nivel de Riesgo predicho, un indicador de severidad (total de víctimas históricas), top de calles, siniestros y vehículos.
-2. **Backend (API en FastAPI + Python):**
-   - Recibe la petición del frontend, transforma los datos al vuelo y **consulta a la Red Neuronal** para obtener el riesgo exacto.
-   - **Lógica Tolerante a Fallos:** Si el usuario elige una combinación que no tiene datos suficientes en una zona, el sistema busca los datos generales de la parroquia automáticamente, evitando pantallas en blanco y devolviendo un aviso inteligente en la interfaz.
-   - Genera dinámicamente un **Mapa de Folium (HTML)** que filtra y muestra *solo* los puntos de calor del nivel de riesgo correspondiente.
+**Competencias demostradas:**
+- 🏗️ Pipeline de ingeniería de datos y transformación espacial (Geolocalización).
+- 🤖 Modelado predictivo con Redes Neuronales Artificiales en TensorFlow / Keras.
+- 📊 Despliegue de lógica predictiva y analítica orientada a la toma de decisiones.
+- 🔌 Integración de modelos analíticos con interfaces web interactivas y mapas de calor dinámicos.
 
 ---
 
-## 🧠 Fases del Modelo de Machine Learning
+## 🎥 Video Demo
 
-### 🗂️ Fase 1: Preparación de Datos
+**Demostración Técnica del Sistema:**
 
-*   Limpia y normaliza columnas, texto y coordenadas para evitar duplicados por escritura distinta o valores mal capturados[cite: 7].
-*   Convierte la fecha y la hora a formatos numéricos y también crea variables derivadas como mes, día de la semana y rango horario[cite: 7].
-*   Aplica transformaciones cíclicas con seno y coseno para que el modelo entienda que las horas y los días no “terminan” de forma brusca[cite: 7].
-*   Genera el porcentaje de riesgo relativo y clasifica cada caso como bajo, medio o alto[cite: 7].
-*   Exporta los datos procesados y el preprocesador en formato `.pkl`[cite: 7].
+[![Video de Demostración del Sistema de Alerta Temprana](https://img.youtube.com/vi/-Bo8oi-aF8o/maxresdefault.jpg)](https://youtu.be/-Bo8oi-aF8o)
 
-### 🤖 Fase 2: Entrenamiento del Modelo
+### Estructura de la Demostración:
+- **El Problema:** Exposición de la alta incidencia de accidentes en Cuenca y la limitación de reportes estáticos tradicionales.
+- **La Solución Técnica:** Explicación del funcionamiento del modelo de red neuronal y el procesamiento en el backend.
+- **Demostración de la Web:** Visualización en vivo de la consulta de riesgo por fecha, hora, parroquia y zona, junto con el despliegue del mapa de puntos y gráficos analíticos.
 
-*   Carga los datos preparados en la fase anterior y recupera el preprocesador ya ajustado[cite: 7].
-*   Entrena una red neuronal con capas densas y `Dropout` para aprender relaciones no lineales entre ubicación, horario y riesgo[cite: 7].
-*   Usa `EarlyStopping` y ajuste de tasa de aprendizaje para detener el entrenamiento cuando el modelo deja de mejorar[cite: 7].
-*   Evalúa el modelo con MAE, MSE, RMSE y R² para medir el error y la capacidad explicativa[cite: 7].
-*   Guarda el modelo final en formato `.keras`[cite: 7].
+---
 
-### 🚀 Fase 3: Predicción y Salida
+## 🎯 El Problema y la Solución
 
-*   Recibe nuevos datos del usuario y deriva automáticamente las variables temporales necesarias para el modelo[cite: 7].
-*   Aplica el mismo preprocesador usado en el entrenamiento[cite: 7].
-*   Genera una predicción de riesgo y la traduce a nivel bajo, medio o alto[cite: 7].
-*   Busca información histórica relacionada para completar la salida con contexto útil, como la causa más frecuente o el vehículo más común[cite: 7].
+### El Desafío
+Las ciudades modernas enfrentan el reto constante de reducir la siniestralidad vial. Las herramientas tradicionales suelen ofrecer reportes históricos estáticos que dificultan:
+- ❌ Anticipar zonas críticas en franjas horarias específicas.
+- ❌ Visualizar la severidad y las causas principales de forma dinámica.
+- ❌ Brindar acceso rápido a ciudadanos o autoridades mediante una interfaz ágil.
+
+### La Solución: Sistema Inteligente de Alerta Temprana
+Una plataforma adaptativa que:
+- **Procesa datos históricos complejos** aplicando transformaciones cíclicas temporales y validación geoespacial.
+- **Estima un índice de riesgo relativo** (0% a 100%) mediante una red neuronal entrenada con patrones reales de Cuenca.
+- **Despliega un mapa interactivo inteligente** que filtra puntos críticos de acuerdo con el nivel de riesgo predicho por la IA.
+- **Genera un panel analítico completo** con el top de causas, tipos de siniestros, vehículos involucrados e indicador de severidad (víctimas).
+
+---
+
+## 📊 Rendimiento y Evaluación del Modelo
+
+### Métricas de Validación (Conjunto de Prueba)
+
+| Métrica | Valor Obtenido | Interpretación Técnica |
+| :--- | :--- | :--- |
+| **MAE (Error Absoluto Medio)** | 9.84 | Desviación promedio porcentual baja en las estimaciones. |
+| **RMSE (Raíz del Error Cuadrático)** | 13.28 | Control efectivo de errores atípicos en el modelo. |
+| **R² (Coeficiente de Determinación)** | 0.6126 | El modelo explica de manera sólida la variabilidad del riesgo histórico. |
+| **Exactitud de Clasificación** | 68.42% | Precisión al clasificar los niveles de alerta (Bajo, Medio, Alto). |
+
+---
+
+## 📁 Estructura del Proyecto & Flujo de Trabajo
+
+El sistema está dividido en tres fases secuenciales implementadas en Jupyter Notebooks, complementadas con scripts de producción:
+Proyecto-Siniestros-Transito/
+├── Fase_1_Riesgo_Ubicacion_Accidentes_Cuenca.ipynb   # Limpieza, ingeniería de variables y exportación
+├── Fase_2_Entrenamiento_Riesgo_Ubicacion_Cuenca.ipynb # Entrenamiento de la Red Neuronal y métricas
+├── Fase_3_Completa_Riesgo_Accidentes_Cuenca.ipynb      # Inferencia, contexto histórico y exportación Power BI
+├── dataset_modelo_riesgo.csv                         # Base agregada para el entrenamiento
+├── resumen_historico_powerbi.csv                     # Indicadores estadísticos para reportes
+├── accidentes_limpios_powerbi.csv                    # Registros individuales limpios para mapas
+├── modelo_riesgo_ubicacion_cuenca.keras              # Red neuronal entrenada
+└── datos_fase1_riesgo_ubicacion.pkl                  # Pipeline de preprocesamiento guardado
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
-* **Machine Learning & Datos:** `TensorFlow`, `Keras`, `Pandas`, `Scikit-Learn`, `Numpy`.
-* **Backend & APIs:** `FastAPI`, `Uvicorn`.
-* **Visualización Geográfica:** `Folium`, `Leaflet`.
-* **Frontend:** `React`, `Tailwind CSS`.
+### Backend & Machine Learning
+- **Python 3.12+**
+- **TensorFlow / Keras:** Diseño y entrenamiento de la red neuronal artificial de regresión.
+- **Scikit-Learn:** Canalizaciones de preprocesamiento (`Pipeline`, `ColumnTransformer`, `StandardScaler`, `OneHotEncoder`).
+- **Pandas & NumPy:** Manipulación y transformación de matrices de datos e ingeniería de características cíclicas.
+
+### Visualización & Web (Prototipo POC)
+- **FastAPI:** Servidor backend de alto rendimiento para procesar las peticiones de la IA.
+- **Folium & Leaflet:** Generación dinámica de mapas interactivos basados en coordenadas geográficas.
+- **React & Tailwind CSS:** Interfaz de usuario moderna en formato Dashboard analítico.
 
 ---
 
-## 📌 Ejecución del Proyecto (Desarrollo)
+## 🏗️ Metodología Detallada (Las 3 Fases)
 
-1. Instalar las dependencias de Python:
+### Fase 1: Preparación y Limpieza de Datos
+1. **Limpieza Geoespacial y Textual:** Estandarización de nombres de parroquias, eliminación de espacios y corrección estricta de coordenadas atípicas utilizando medianas por zona.
+2. **Ingeniería de Variables Temporales:** Extracción de mes, día de la semana y horas. Aplicación de transformaciones trigonométricas cíclicas (`seno` y `coseno`) para las horas (24h) y días (7 días), permitiendo que la red comprenda la naturaleza circular del tiempo.
+3. **Cálculo de Riesgo Relativo:** Agrupación por combinaciones de tiempo y ubicación para calcular la frecuencia de accidentes, normalizándola frente al pico máximo histórico (11 accidentes) para obtener un porcentaje de `0%` a `100%`.
+
+### Fase 2: Entrenamiento de la Red Neuronal
+1. **Arquitectura del Modelo:** Red secuencial multicapa densas (`Dense 64` $\rightarrow$ `32` $\rightarrow$ `16` $\rightarrow$ `1`) con activación `ReLU` en las capas ocultas y `Sigmoid` en la salida, escalada posteriormente a porcentaje.
+2. **Estrategia de Regularización:** Uso de capas `Dropout` (0.3 y 0.2) para mitigar el sobreajuste.
+3. **Callbacks de Optimización:** Implementación de `EarlyStopping` (paciencia de 12 épocas) y `ReduceLROnPlateau` para garantizar una convergencia suave y estable.
+
+### Fase 3: Predicción, Contexto y Salida
+1. **Inferencia Dinámica:** Carga de los artefactos (`.keras` y `.pkl`) para recibir variables en tiempo real desde la web.
+2. **Cruce de Contexto Histórico:** Adición automática de información de soporte (causa principal, tipo de vehículo más común, promedios de lesionados y fallecidos).
+3. **Exportación de Datos:** Generación de estructuras limpias en CSV optimizados con separador `;` y coma decimal para tableros analíticos en Power BI.
+
+---
+
+## 📌 Guía de Instalación y Ejecución local
+
+1. Clona el repositorio y sitúate en la carpeta del proyecto.
+2. Instala las dependencias necesarias:
    ```bash
    pip install -r requirements.txt
-
-## 🎥 Video Demostrativo
-
-[![Demostración del Sistema de Alerta Temprana](https://img.youtube.com/vi/-Bo8oi-aF8o/maxresdefault.jpg)](https://youtu.be/-Bo8oi-aF8o)
