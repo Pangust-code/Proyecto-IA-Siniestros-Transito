@@ -1,81 +1,71 @@
-# Sistema de Alerta Temprana de Accidentes de Tránsito en Cuenca
+# 🚦 Sistema de Alerta Temprana de Accidentes de Tránsito en Cuenca
 
-Proyecto de Machine Learning con una red neuronal artificial para estimar el riesgo relativo de accidentes de tránsito en Cuenca, Ecuador. El sistema se organiza en tres notebooks: preparación de datos, entrenamiento del modelo y generación de predicciones listas para Power BI.
+Proyecto de Machine Learning con una red neuronal artificial para estimar el riesgo relativo de accidentes de tránsito en Cuenca, Ecuador. El sistema se organiza en tres fases metodológicas: preparación de datos, entrenamiento del modelo y generación de predicciones en una aplicación web interactiva[cite: 7].
 
 ## Resumen
 
-El proyecto toma el historial de accidentes, lo limpia y lo transforma en variables útiles para aprendizaje automático. A partir de esa base, construye un modelo de regresión que devuelve un porcentaje de riesgo entre 0 y 100. Luego, la fase final combina la predicción con datos históricos de contexto para producir salidas útiles en análisis y visualización.
+El proyecto toma el historial de accidentes, lo limpia y lo transforma en variables útiles para el aprendizaje automático[cite: 7]. A partir de esa base, construye un modelo de regresión que devuelve un porcentaje de riesgo entre 0 y 100[cite: 7]. Luego, la fase final combina la predicción con datos históricos de contexto para producir una visualización dinámica en una página web.
 
-La idea general es responder esta pregunta: dada una fecha, una hora y una ubicación concreta en Cuenca, ¿qué tan alto es el riesgo histórico relativo de accidentes en ese contexto? El resultado no es una probabilidad absoluta, sino un índice aprendido a partir de los patrones observados en los datos.
+La idea general es responder esta pregunta: dada una fecha, una hora y una ubicación concreta en Cuenca, ¿qué tan alto es el riesgo histórico relativo de accidentes en ese contexto?[cite: 7]. El resultado no es una probabilidad absoluta, sino un índice aprendido a partir de los patrones observados en los datos[cite: 7].
 
-## Cómo funciona
+---
 
-### Fase 1: preparación de datos
+## 🌐 ¿Cómo funciona la Página Web? (Arquitectura del Sistema)
 
-- Limpia y normaliza columnas, texto y coordenadas para evitar duplicados por escritura distinta o valores mal capturados.
-- Convierte la fecha y la hora a formatos numéricos y también crea variables derivadas como mes, día de la semana y rango horario.
-- Aplica transformaciones cíclicas con seno y coseno para que el modelo entienda que las horas y los días no “terminan” de forma brusca.
-- Agrupa los accidentes por combinación de tiempo y ubicación para calcular frecuencia histórica.
-- Genera el porcentaje de riesgo relativo y clasifica cada caso como bajo, medio o alto.
-- Exporta los datos procesados, el preprocesador y archivos auxiliares para las fases siguientes y para Power BI.
+Nuestra plataforma web está diseñada para ser rápida, predictiva y tolerante a fallos, dividida en dos partes principales:
 
-En esta fase también se generan tablas útiles para análisis externo, por ejemplo un resumen histórico con métricas como la causa más frecuente, el tipo de siniestro más común, el vehículo más repetido y los promedios de lesionados y fallecidos.
+1. **Frontend (Interfaz de Usuario en React):** 
+   - El usuario selecciona únicamente la fecha, la hora, la parroquia y si es feriado.
+   - La interfaz muestra de forma dinámica un **Dashboard Analítico** con el Nivel de Riesgo predicho, un indicador de severidad (total de víctimas históricas), top de calles, siniestros y vehículos.
+2. **Backend (API en FastAPI + Python):**
+   - Recibe la petición del frontend, transforma los datos al vuelo y **consulta a la Red Neuronal** para obtener el riesgo exacto.
+   - **Lógica Tolerante a Fallos:** Si el usuario elige una combinación que no tiene datos suficientes en una zona, el sistema busca los datos generales de la parroquia automáticamente, evitando pantallas en blanco y devolviendo un aviso inteligente en la interfaz.
+   - Genera dinámicamente un **Mapa de Folium (HTML)** que filtra y muestra *solo* los puntos de calor del nivel de riesgo correspondiente.
 
-### Fase 2: entrenamiento del modelo
+---
 
-- Carga los datos preparados en la fase anterior y recupera el preprocesador ya ajustado.
-- Entrena una red neuronal con capas densas y `Dropout` para aprender relaciones no lineales entre ubicación, horario y riesgo.
-- Usa `EarlyStopping` y ajuste de tasa de aprendizaje para detener el entrenamiento cuando el modelo deja de mejorar.
-- Convierte la salida a un valor entre 0 y 1 durante el entrenamiento y luego la reescala a porcentaje.
-- Evalúa el modelo con MAE, MSE, RMSE y R² para medir el error y la capacidad explicativa.
-- Guarda el modelo final en formato `.keras`, junto con métricas, historial y resultados de prueba.
+## 🧠 Fases del Modelo de Machine Learning
 
-Además de la evaluación numérica, esta fase permite comparar visualmente los valores reales frente a los predichos y revisar cómo se comporta la clasificación final en niveles bajo, medio y alto.
+### 🗂️ Fase 1: Preparación de Datos
 
-### Fase 3: predicción y salida
+*   Limpia y normaliza columnas, texto y coordenadas para evitar duplicados por escritura distinta o valores mal capturados[cite: 7].
+*   Convierte la fecha y la hora a formatos numéricos y también crea variables derivadas como mes, día de la semana y rango horario[cite: 7].
+*   Aplica transformaciones cíclicas con seno y coseno para que el modelo entienda que las horas y los días no “terminan” de forma brusca[cite: 7].
+*   Genera el porcentaje de riesgo relativo y clasifica cada caso como bajo, medio o alto[cite: 7].
+*   Exporta los datos procesados y el preprocesador en formato `.pkl`[cite: 7].
 
-- Recibe nuevos datos de fecha, hora, parroquia, zona y feriado desde una entrada manual o desde una interfaz.
-- Deriva automáticamente las variables temporales necesarias para el modelo, como el mes, el día de la semana y el rango horario.
-- Aplica el mismo preprocesador usado en el entrenamiento para mantener consistencia entre lo que vio el modelo y lo que predice.
-- Genera una predicción de riesgo y la traduce a nivel bajo, medio o alto.
-- Busca información histórica relacionada para completar la salida con contexto útil, como la causa más frecuente o el vehículo más común.
-- Exporta archivos CSV listos para Power BI, análisis geográfico o consumo en otras aplicaciones.
+### 🤖 Fase 2: Entrenamiento del Modelo
 
-Esta fase está pensada para ser la puerta de salida del proyecto: combina el modelo, el histórico y los archivos de exportación en un solo flujo para que la predicción se pueda reutilizar en reportes o en una aplicación.
+*   Carga los datos preparados en la fase anterior y recupera el preprocesador ya ajustado[cite: 7].
+*   Entrena una red neuronal con capas densas y `Dropout` para aprender relaciones no lineales entre ubicación, horario y riesgo[cite: 7].
+*   Usa `EarlyStopping` y ajuste de tasa de aprendizaje para detener el entrenamiento cuando el modelo deja de mejorar[cite: 7].
+*   Evalúa el modelo con MAE, MSE, RMSE y R² para medir el error y la capacidad explicativa[cite: 7].
+*   Guarda el modelo final en formato `.keras`[cite: 7].
 
-## Estructura del proyecto
+### 🚀 Fase 3: Predicción y Salida
 
-- [Fase 1](Fase_1_Riesgo_Ubicacion_Accidentes_Cuenca.ipynb): limpieza, ingeniería de variables y exportación de datos.
-- [Fase 2](Fase_2_Entrenamiento_Riesgo_Ubicacion_Cuenca.ipynb): entrenamiento y evaluación del modelo.
-- [Fase 3](Fase_3_Completa_Riesgo_Accidentes_Cuenca.ipynb): predicción, contexto histórico y exportación final.
+*   Recibe nuevos datos del usuario y deriva automáticamente las variables temporales necesarias para el modelo[cite: 7].
+*   Aplica el mismo preprocesador usado en el entrenamiento[cite: 7].
+*   Genera una predicción de riesgo y la traduce a nivel bajo, medio o alto[cite: 7].
+*   Busca información histórica relacionada para completar la salida con contexto útil, como la causa más frecuente o el vehículo más común[cite: 7].
 
-## Archivos principales
+---
 
-- `dataset_modelo_riesgo.csv`: base agregada usada para entrenar y analizar el riesgo. Contiene la combinación de variables de tiempo y ubicación con su porcentaje de riesgo relativo.
-- `resumen_historico_powerbi.csv`: tabla con indicadores históricos para reportes. Sirve para enriquecer la visualización con contexto estadístico.
-- `accidentes_limpios_powerbi.csv`: registros limpios para análisis y mapa. Conserva los campos necesarios para explorar la información geográfica.
-- `modelo_riesgo_ubicacion_cuenca.keras`: modelo entrenado y listo para inferencia. Es el archivo que usa la Fase 3 para predecir.
-- `datos_fase1_riesgo_ubicacion.pkl`: preprocesador, variables y particiones de entrenamiento/prueba. Permite reproducir el mismo procesamiento en otras sesiones.
-- `predicciones_riesgo_powerbi.csv`, `mapa_riesgo_powerbi.csv`, `ultima_prediccion_riesgo.csv`: salidas generadas en la Fase 3 para consumo directo en Power BI o para revisar una predicción puntual.
+## 🛠️ Tecnologías Utilizadas
 
-## Requisitos
+* **Machine Learning & Datos:** `TensorFlow`, `Keras`, `Pandas`, `Scikit-Learn`, `Numpy`.
+* **Backend & APIs:** `FastAPI`, `Uvicorn`.
+* **Visualización Geográfica:** `Folium`, `Leaflet`.
+* **Frontend:** `React`, `Tailwind CSS`.
 
-Instala las dependencias con:
+---
 
-```bash
-pip install -r requirements.txt
-```
+## 📌 Ejecución del Proyecto (Desarrollo)
 
-## Uso recomendado
+1. Instalar las dependencias de Python:
+   ```bash
+   pip install -r requirements.txt
 
-1. Ejecuta primero la Fase 1 para generar los datos procesados.
-2. Ejecuta la Fase 2 para entrenar y guardar el modelo.
-3. Ejecuta la Fase 3 para probar predicciones y exportar archivos para Power BI.
+## 🎥 Video Demostrativo
 
-## Nota
-
-El resultado del modelo es un índice de riesgo histórico relativo, no una probabilidad absoluta de accidente.
-
-## Video
-
-https://youtu.be/-Bo8oi-aF8o?feature=shared
+[![Demostración del Sistema de Alerta Temprana](https://img.youtube.com/vi/-Bo8oi-aF8o/maxresdefault.jpg)](https://youtu.be/-Bo8oi-aF8o)
